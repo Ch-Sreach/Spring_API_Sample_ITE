@@ -6,6 +6,9 @@ import com.example.productsampleapi.dto.UpdateProductRequest;
 import com.example.productsampleapi.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,33 +19,43 @@ import java.util.List;
 public class ProductRestController {
     private final ProductService productService;
 
+//    public List<ProductResponse> getProducts() {
+//        return productService.findAllProducts();
+//    }
+
     @GetMapping
-    public List<ProductResponse> getProducts() {
-        return productService.findAllProducts();
+    public Page<ProductResponse> getProducts(Pageable pageable) {
+        return productService.findAllProducts(pageable);
     }
 
-    //find product by id
-    // localhost:8080/api/v1/products/1001
     @GetMapping("/{id}")
     public ProductResponse getProductById(@PathVariable Integer id) {
         return productService.findProductById(id);
     }
 
     @PostMapping
-    public ProductResponse createProduct(@Valid @RequestBody ProductRequest request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductResponse createProduct(
+            @Valid @RequestBody ProductRequest request) {
         return productService.createProduct(request);
     }
 
-    //update product by id
-    // Content-Type JSON
     @PatchMapping("/{id}")
-    public ProductResponse updateProduct(@PathVariable Integer id, @RequestBody UpdateProductRequest request) {
+    public ProductResponse updateProduct(
+            @PathVariable Integer id,
+            @RequestBody UpdateProductRequest request) {
         return productService.updateProduct(id, request);
     }
 
-    //delete product by ID
     @DeleteMapping("/{id}")
-    public Boolean deleteProduct(@PathVariable Integer id){
-        return productService.deleteProduct(id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable Integer id) {
+        productService.deleteProduct(id);
+    }
+
+    @PatchMapping("/{id}/soft-delete")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void softDeleteProduct(@PathVariable Integer id) {
+        productService.softDeleteProduct(id);
     }
 }

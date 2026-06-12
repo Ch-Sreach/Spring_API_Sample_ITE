@@ -10,8 +10,8 @@ public record CategoryRequest(
         String name,
         @Size(min = 1, max = 100)
         @NotBlank(message = "description is required")
-        String description,
-        @NotNull(message = "NotNull for Action of Category")
-        Boolean isActive
+        String description
+//        @NotNull(message = "Not Null for Action of Category")
+//        Boolean isDelete
 ) {
 }
